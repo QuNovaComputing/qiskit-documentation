@@ -39,13 +39,16 @@ def skip_apis(working_directory: str) -> Iterable[str]:
 
 def main() -> None:
     if "--pull-only" in sys.argv:
-        subprocess.run(["docker", "pull", IMAGE], check=True)
+        subprocess.run(["docker", "pull", "--platform", "linux/amd64", IMAGE], check=True)
         sys.exit(0)
 
     # Keep this aligned with the Dockerfile at the root of the repository.
     cmd = [
         "docker",
         "run",
+        # The image is only published for amd64, so Apple Silicon Macs need emulation.
+        "--platform",
+        "linux/amd64",
         "-v",
         f"{PWD}/docs:/home/node/app/content/docs",
         "-v",
