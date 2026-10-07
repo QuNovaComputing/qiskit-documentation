@@ -12,14 +12,14 @@ Files we own:
 
 ## Repositories and branches
 
-| Name | What it is | Rules |
-|---|---|---|
-| `upstream` = `Qiskit/documentation` | IBM's repository. What is on its `main` is what the docs site publishes. | We only reach it through PRs. |
-| `origin` = `QuNovaComputing/qiskit-documentation` | Our fork. | |
-| `main` (fork) | Our hub: IBM's docs plus fork-only files (this file, `qunova/`, the `./start` fix). | **Never use it as the head of a PR to IBM.** It carries fork-only files. |
-| `upstream-main` (fork) | A copy of IBM's `main`. It is the base of review PRs, so their **Files changed** tab shows exactly what IBM will receive. | Locked by a ruleset. Nothing can be merged or pushed into it. See [Repository settings](#repository-settings). |
-| Change branch, for example `hivqe-4.0.0` | One change to our docs, cut from IBM's `main`. | The same branch is reviewed in the fork and then sent to IBM. |
-| `pr-screenshots` (fork) | Before/after screenshots used in review PRs, one folder per change branch. | Orphan branch with no shared history with the docs. Never part of a PR. |
+| Name                                              | What it is                                                                                                                | Rules                                                                                                          |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `upstream` = `Qiskit/documentation`               | IBM's repository. What is on its `main` is what the docs site publishes.                                                  | We only reach it through PRs.                                                                                  |
+| `origin` = `QuNovaComputing/qiskit-documentation` | Our fork.                                                                                                                 |                                                                                                                |
+| `main` (fork)                                     | Our hub: IBM's docs plus fork-only files (this file, `qunova/`, the `./start` fix).                                       | **Never use it as the head of a PR to IBM.** It carries fork-only files.                                       |
+| `upstream-main` (fork)                            | A copy of IBM's `main`. It is the base of review PRs, so their **Files changed** tab shows exactly what IBM will receive. | Locked by a ruleset. Nothing can be merged or pushed into it. See [Repository settings](#repository-settings). |
+| Change branch, for example `hivqe-4.0.0`          | One change to our docs, cut from IBM's `main`.                                                                            | The same branch is reviewed in the fork and then sent to IBM.                                                  |
+| `pr-screenshots` (fork)                           | Before/after screenshots used in review PRs, one folder per change branch.                                                | Orphan branch with no shared history with the docs. Never part of a PR.                                        |
 
 Set up the remotes once:
 
