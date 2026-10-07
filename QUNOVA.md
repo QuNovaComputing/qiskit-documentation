@@ -2,7 +2,7 @@
 
 This is QuNovaComputing's fork of [Qiskit/documentation](https://github.com/Qiskit/documentation), the source of the IBM Quantum docs. We use it to prepare changes to the HI-VQE Chemistry docs, review them internally, and then send them to IBM.
 
-This file, the `qunova/` folder, and the `./start` change are fork-only. They live on our `main` and must never be part of a PR to IBM.
+This file and the `qunova/` folder are fork-only. They live on our `main` and must never be part of a PR to IBM.
 
 Files we own:
 
@@ -16,7 +16,7 @@ Files we own:
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `upstream` = `Qiskit/documentation`               | IBM's repository. What is on its `main` is what the docs site publishes.                                                  | We only reach it through PRs.                                                                                  |
 | `origin` = `QuNovaComputing/qiskit-documentation` | Our fork.                                                                                                                 |                                                                                                                |
-| `main` (fork)                                     | Our hub: IBM's docs plus fork-only files (this file, `qunova/`, the `./start` fix).                                       | **Never use it as the head of a PR to IBM.** It carries fork-only files.                                       |
+| `main` (fork)                                     | Our hub: IBM's docs plus fork-only files (this file and `qunova/`).                                                       | **Never use it as the head of a PR to IBM.** It carries fork-only files.                                       |
 | `upstream-main` (fork)                            | A copy of IBM's `main`. It is the base of review PRs, so their **Files changed** tab shows exactly what IBM will receive. | Locked by a ruleset. Nothing can be merged or pushed into it. See [Repository settings](#repository-settings). |
 | Change branch, for example `hivqe-4.0.0`          | One change to our docs, cut from IBM's `main`.                                                                            | The same branch is reviewed in the fork and then sent to IBM.                                                  |
 | `pr-screenshots` (fork)                           | Before/after screenshots used in review PRs, one folder per change branch.                                                | Orphan branch with no shared history with the docs. Never part of a PR.                                        |
@@ -181,7 +181,7 @@ After that:
    ```
 
    > [!WARNING]
-   > On **Sync fork**, choose **Update branch** (a merge), **never Discard commits**. Our `main` carries fork-only commits that IBM does not have: this file, `qunova/`, and the `./start` fix. Discarding deletes them. Do not force-push IBM's `main` over ours for the same reason. (Discarding was fine once, when every extra commit on our `main` was already in IBM's history under a different hash. That is no longer the case.)
+   > On **Sync fork**, choose **Update branch** (a merge), **never Discard commits**. Our `main` carries fork-only commits that IBM does not have: this file and `qunova/`. Discarding deletes them. Do not force-push IBM's `main` over ours for the same reason. (Discarding was fine once, when every extra commit on our `main` was already in IBM's history under a different hash. That is no longer the case.)
 
 3. Refresh `upstream-main` before the next review PR.
 
@@ -209,7 +209,7 @@ Changing these needs repository admin rights.
 ```
 
 - Docker must be running. On macOS, use Docker Desktop.
-- The preview image is published for amd64 only. Our `./start` passes `--platform linux/amd64`, so it also runs on Apple Silicon under emulation. The first page load is a little slower.
+- The preview image is published for amd64 and arm64, so `./start` runs natively on Apple Silicon too. (Older images were amd64-only, and our `main` pinned `--platform linux/amd64` until #11.)
 - If port 3000 is in use, an earlier preview is still running. Stop it with `docker ps` and `docker stop <id>`.
 
 ## Status
