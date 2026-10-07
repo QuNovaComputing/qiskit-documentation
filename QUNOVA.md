@@ -63,14 +63,27 @@ If you edit a notebook's outputs by hand instead of re-running it, say so in the
 
 ### 3. Run the checks
 
-IBM's CI does not run these in the fork, so run them locally. You need `npm ci` once, and [uv](https://docs.astral.sh/uv/) for the last two:
+IBM's CI does not run in the fork, so run its checks locally. These are the content checks from the Lint job in `.github/workflows/main.yml`. You need `npm ci` once, and [uv](https://docs.astral.sh/uv/) for the notebook tools:
 
 ```bash
+npm run check:internal-links -- --current-apis --dev-apis --historical-apis --qiskit-legacy-release-notes
+npm run check:stale-images
+npm run check:markdown -- --apis
 npm run check:spelling
-npm run check:markdown
-npm run check:internal-links
+npm run check:qiskit-bot
+npm run check:fmt
+npm run check:orphan-pages -- --apis
+uvx ruff@0.7.1 format --check docs/guides/qunova-chemistry.ipynb docs/tutorials/qunova-hivqe.ipynb
 uvx --from squeaky==0.7.0 squeaky --check --no-advice docs/guides/qunova-chemistry.ipynb docs/tutorials/qunova-hivqe.ipynb
 uvx --from ./scripts/notebook-normalizer qiskit-docs-notebook-normalizer --check
+```
+
+With the preview running (`./start`), also check that the changed pages render. This needs `npx playwright install firefox` once:
+
+```bash
+printf '%s\n' docs/guides/qunova-chemistry.ipynb docs/api/functions/qunova-chemistry.mdx docs/tutorials/qunova-hivqe.ipynb > /tmp/changed.txt
+npm run check:pages-render -- --from-file /tmp/changed.txt
+npm run check:katex-render -- --from-file /tmp/changed.txt
 ```
 
 Also confirm that the branch only touches our files:
