@@ -1,0 +1,7 @@
+[
+  {"name": "api-outputs", "url": "/docs/api/functions/qunova-chemistry", "start": "Outputs", "end": null},
+  {"name": "guide-result", "url": "/docs/guides/qunova-chemistry", "start": "After the job is completed", "end": "Licensing"},
+  {"name": "guide-changelog", "url": "/docs/guides/qunova-chemistry", "start": "Changelog", "end": "Get support"},
+  {"name": "tutorial-setup", "url": "/docs/tutorials/qunova-hivqe", "start": "Requirements", "end": "Part 1: Li2S"},
+  {"name": "tutorial-results", "url": "/docs/tutorials/qunova-hivqe", "start": "Once all jobs are completed", "end": "The entire QPU runtime"}
+]
