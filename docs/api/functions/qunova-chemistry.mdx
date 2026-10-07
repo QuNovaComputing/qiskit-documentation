@@ -224,12 +224,38 @@ The tolerance for predicting which states should be screened out of the subspace
 - Example: `{"shots": 10_000, "max_iter": 10 }`
 </Attribute>
 
+### `estimate_only`
+<Attribute attributeTypeHint="`bool`" attributeValue="`False`">
+Size the problem and return without running it. The response contains an
+`"estimate"` dictionary instead of a result, and no QPU time is spent.
+- Required: No
+- Example: `True`
+</Attribute>
 
+### `function_size`
+<Attribute attributeTypeHint="`str`" attributeValue="`m`">
+Which resources the job runs on, and what the run is billed. It is passed to
+`run()` like the arguments above, though it belongs to the platform rather than
+to this function.
 
+| `function_size` | Qubits | Compute profile | License fee per run |
+|-----|-----|-----|-----|
+| `"s"` | Up to 10 | 8 CPUs, 32 GB | 0.4 RU |
+| `"m"` | Up to 20 | 16 CPUs, 128 GB | 1.0 RU |
+| `"l"` | No limit | 48 CPUs, 768 GB | 4.0 RU |
+
+A size smaller than the problem needs is rejected before any QPU time is
+spent, with error code 1221 naming the size to use. A size larger than it
+needs runs, and is billed at that larger size. Runs made with a license token
+are not checked against the problem, and are bounded by the qubit limit the
+license grants instead.
+- Required: No
+- Example: `"l"`
+</Attribute>
 
 ## Outputs
 
-The function returns a dictionary with four keys and values. The keys and values are documented in the following table:
+The function returns a dictionary with the following keys and values:
 
 | Key   | Value Type| Explanation   |
 |-----|---------------|---------------------------------------------------------------------------------------------------------------------------|
@@ -237,3 +263,22 @@ The function returns a dictionary with four keys and values. The keys and values
 | `"results_file_name"` | `string` | The name of the hdf5 results file that can be downloaded using Qiskit Serverless. The file contains `"states"`, `"eigenvector"`, `"energy_history"`, `"final_energy"`, and `"final_energy_variance"`. |
 | `"energy_variance"` | `float` | The energy variance of the ground state of the subspace composed of the `"states"` saved in the results file, giving an indication of the quality of the solution. This value is non-negative and a lower value means that the ground state of the subspace more closely approximates an eigenstate of the system's Hamiltonian. |
 | `"energy_history"` | `List[float]` | The energies computed each iteration during the hybrid optimization process, in the same order that they were computed. Two energies are computed per iteration as part of the SPSA optimization process. |
+| `"function_version"` | `string` | The version of the function that ran the job. Quote it in a support request. |
+| `"metadata"` | `dict` | Contains `"resource_usage"`, giving the time spent in each stage of the job, including QPU time. |
+
+### With `estimate_only`
+
+An estimate returns `"function_version"` and `"metadata"` as above, and in
+place of a result an `"estimate"` dictionary:
+
+| Key   | Value Type| Explanation   |
+|-----|---------------|-----|
+| `"num_qubits"` | `int` | The number of qubits the problem needs. |
+| `"function_size"` | `string` | The function size to submit it at. |
+| `"compute_profile"` | `string` | The CPUs and memory that size provides, such as `"16x128"`. |
+| `"license_fee_ru"` | `float` | What a run at that size is billed, in resource units. |
+| `"qubit_limit"` | `Optional[int]` | The qubit limit that applies to the caller, or `null` if none does. |
+| `"within_qubit_limit"` | `bool` | Whether the problem fits that limit. |
+
+The qubit limit is reported rather than enforced, so a problem can be sized
+before holding a license that permits it.
