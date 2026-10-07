@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Iterable
 
 # Get the latest digest by running `docker pull icr.io/qc-open-source-docs-public/preview:latest`.
-IMAGE_DIGEST = "sha256:dd5ebc7e7c283858c6a2a82a40fbb6a30a1603a2e632241ba76e8281a3ae28f2"
+IMAGE_DIGEST = "sha256:cc6d3254b1e74ff377662a1f523a7badb0c17b679b3e5d11b5b46e471d281ed5"
 
 # Docker on Windows uses `/` rather than `\`, so we need to call `.as_posix()`:
 # https://medium.com/@kale.miller96/how-to-mount-your-current-working-directory-to-your-docker-container-in-windows-74e47fa104d7
@@ -39,16 +39,13 @@ def skip_apis(working_directory: str) -> Iterable[str]:
 
 def main() -> None:
     if "--pull-only" in sys.argv:
-        subprocess.run(["docker", "pull", "--platform", "linux/amd64", IMAGE], check=True)
+        subprocess.run(["docker", "pull", IMAGE], check=True)
         sys.exit(0)
 
     # Keep this aligned with the Dockerfile at the root of the repository.
     cmd = [
         "docker",
         "run",
-        # The image is only published for amd64, so Apple Silicon Macs need emulation.
-        "--platform",
-        "linux/amd64",
         "-v",
         f"{PWD}/docs:/home/node/app/content/docs",
         "-v",
