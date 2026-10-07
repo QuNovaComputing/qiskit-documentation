@@ -147,7 +147,8 @@ The PR description should contain:
 
 ### 6. Review and approval
 
-- **`supalert-qunova` is a required reviewer on every PR.** Add whoever owns the feature as well.
+- **`supalert-qunova` is a required reviewer on every PR that changes what HI-VQE users read**: the guide, the tutorial, the API reference, and the Changelog, including review PRs before IBM. Add whoever owns the feature as well.
+- Fork-internal PRs don't need `supalert-qunova`. That covers this file, the `qunova/` scripts, syncing with IBM's `main`, and CI or repository settings.
 - To approve, a reviewer opens **Files changed**, clicks **Review changes** (or **Submit review**), chooses **Approve** and submits. The PR author cannot approve their own PR.
 - Fixes go on the same branch as new commits. The review PR updates by itself.
 - Do not merge the review PR. The `upstream-main` ruleset blocks it anyway.
