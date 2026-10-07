@@ -61,6 +61,8 @@ If you edit a notebook's outputs by hand instead of re-running it, say so in the
 
 **If you change code in a notebook, run that cell against the deployed function.** Nothing else will, and code that reads correctly can still fail. For example, the guide's download example once opened a file under a name `file_download` never saved, and a rename once changed `run()` keyword names that the function rejects. Run a copy outside the repo, so the docs' outputs don't change by accident.
 
+**The guide's qubit rule is tested in QunovaPulsar.** "Check the size before you run" gives readers the rule as a table (2 × the orbitals AVAS selects, else 2 × `len(active_orbitals)`, else 2 × the basis size), plus `estimate_only` for an exact figure. `estimate_only` is billed as a run at the size it is submitted at, so the guide says to submit it at `"s"`. QunovaPulsar's `qiskit_functions/tests/test_doc_sizing.py` writes the table as code and checks it against the function's own sizing. If you change the table, update that test. If the test fails after a function change, the table has to change.
+
 ### 3. Run the checks
 
 IBM's CI does not run in the fork, so run its checks locally. These are the content checks from the Lint job in `.github/workflows/main.yml`. You need `npm ci` once, and [uv](https://docs.astral.sh/uv/) for the notebook tools:
