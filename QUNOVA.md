@@ -59,6 +59,8 @@ Write each entry for the reader. Say what changed in the function's inputs, outp
 
 If you edit a notebook's outputs by hand instead of re-running it, say so in the review PR. IBM's CI does not execute the two Qunova notebooks: they are on the exclude list in `scripts/config/notebook-testing.toml`.
 
+**If you change code in a notebook, run that cell against the deployed function.** Nothing else will, and code that reads correctly can still fail. For example, the guide's download example once opened a file under a name `file_download` never saved, and a rename once changed `run()` keyword names that the function rejects. Run a copy outside the repo, so the docs' outputs don't change by accident.
+
 ### 3. Run the checks
 
 IBM's CI does not run these in the fork, so run them locally. You need `npm ci` once, and [uv](https://docs.astral.sh/uv/) for the last two:
@@ -149,15 +151,24 @@ Or use the GitHub UI: on Qiskit/documentation, go to **Pull requests → New pul
 
 Sign IBM's contributor license agreement (CLA) when the bot asks. It can be done after the PR is opened.
 
+After that:
+
+- **CI may wait for approval.** If this is the author's first PR to Qiskit/documentation, GitHub holds IBM's CI until a maintainer clicks **Approve and run**. The checks show `action_required`, and the required **Lint** and **Execute notebooks** checks show "Expected — Waiting for status to be reported". Ask in the Slack channel `qunova-ibm-quantum-partnership`; @abbycross reviewed and merged our last PR (#5425), and @HuangJunye is our contact. Authors with a merged PR get CI straight away.
+- **Expected results.** Lint should pass if step 3 passed. Execute notebooks skips our two notebooks, because they are on IBM's exclude list. PR preview skips for PRs from forks.
+- **Review fixes** go on the same branch as new commits, and the IBM PR picks them up.
+
 ### 8. After IBM merges
 
-1. Close the review PR in the fork.
+1. Close the review PR in the fork, if it is still open.
 2. Bring IBM's `main` into our `main`, either with the **Sync fork** button on GitHub or with:
 
    ```bash
    git checkout main && git pull origin main
    git merge upstream/main && git push origin main
    ```
+
+   > [!WARNING]
+   > On **Sync fork**, choose **Update branch** (a merge), **never Discard commits**. Our `main` carries fork-only commits that IBM does not have: this file, `qunova/`, and the `./start` fix. Discarding deletes them. Do not force-push IBM's `main` over ours for the same reason. (Discarding was fine once, when every extra commit on our `main` was already in IBM's history under a different hash. That is no longer the case.)
 
 3. Refresh `upstream-main` before the next review PR.
 
@@ -192,6 +203,6 @@ Changing these needs repository admin rights.
 
 Last updated 2026-10-07.
 
-- **4.0.0:** in review in [#6](https://github.com/QuNovaComputing/qiskit-documentation/pull/6). It has not been sent to IBM yet.
-- **5.0.x:** [#3](https://github.com/QuNovaComputing/qiskit-documentation/pull/3) predates this process. It is stacked on our `main` and has no 5.0.x Changelog entry yet. After IBM merges 4.0.0, move it to a branch cut from IBM's `main`, add the Changelog entry, and review it as above.
+- **4.0.0:** approved in [#6](https://github.com/QuNovaComputing/qiskit-documentation/pull/6) (now closed). Sent to IBM as [Qiskit/documentation#5758](https://github.com/Qiskit/documentation/pull/5758) from `hivqe-4.0.0`. CLA is signed. CI is waiting for a maintainer to approve it, since this is the author's first PR there. Two fixes found while running the guide against the deployed 4.0.0 function went in before sending, and onto our `main` through #8 and #9: the results-file download now passes `target_name`, and the licensing example uses `backend_name` instead of `ibm_torino`.
+- **5.0.x:** [#3](https://github.com/QuNovaComputing/qiskit-documentation/pull/3) predates this process. It is stacked on our `main` and has no 5.0.x Changelog entry yet. After IBM merges 4.0.0, move it to a branch cut from IBM's `main`, add the Changelog entry, and review it as above. Its error table lists 4630 for an unreadable licence, which QunovaPulsar has but no released function version does yet (5.0.2 still returns 1219). Send it only once that version ships.
 - **Planned:** automate steps 3 and 4 as fork-only GitHub Actions. They would run the checks, post the screenshots as a PR comment, and fail when a branch would carry fork-only files to IBM.
