@@ -40,6 +40,7 @@ Name of the backend to make the query.
 <Attribute attributeTypeHint="`int`">
 The maximum subspace dimension for the diagonalization. Fewer states will be used if the number is not a perfect square.
 - Required: Yes
+- Valid range: Between 1 and 400 000 000
 - Example: `100`
 </Attribute>
 
@@ -47,6 +48,7 @@ The maximum subspace dimension for the diagonalization. Fewer states will be use
 <Attribute attributeTypeHint="`int`">
 The maximum number of classically-generated CI states to be included in each iteration.
 - Required: Yes
+- Valid range: At least 1
 - Example: `10`
 </Attribute>
 
@@ -122,7 +124,7 @@ Specifies whether to use cartesian GTOs as the angular momentum basis functions 
 </Attribute>
 
 #### `magmom`
-<Attribute attributeTypeHint="`(`Optional[List[Union[int, float]]]`" attributeValue="`1_000`">
+<Attribute attributeTypeHint="`Optional[List[Union[int, float]]]`" attributeValue="`None`">
 Sets the colinear spin magnetic moment of each atom. By default, this is None and each atom is initialized with a spin of zero.
 - Valid range: See [pyscf documentation](https://pyscf.org/pyscf_api_docs/pyscf.gto.html#pyscf.gto.mole.MoleBase.build)
 </Attribute>
@@ -136,7 +138,6 @@ This defines Atomic Orbital to be included in AVAS scheme. See [AVAS documentati
 #### `avas_threshold`
 <Attribute attributeTypeHint="`float`" attributeValue="`0.2`">
 This specifies the cutoff value used to determine which Atomic Orbitals (AOs) are retained in the active space.
-- Valid range: Between 0.0 and 2.0
 </Attribute>
 
 #### `noons_level`
@@ -228,6 +229,14 @@ The tolerance for predicting which states should be screened out of the subspace
 
 - Required: No
 - Example: `{"shots": 10_000, "max_iter": 10 }`
+</Attribute>
+
+### `use_session`
+<Attribute attributeTypeHint="`bool`" attributeValue="`False`">
+Runs the function's quantum jobs in one Qiskit Runtime session, so that jobs
+after the first do not wait in the queue again.
+- Required: No
+- Example: `True`
 </Attribute>
 
 ### `function_size`
