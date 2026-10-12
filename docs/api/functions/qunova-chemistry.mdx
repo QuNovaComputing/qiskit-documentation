@@ -16,6 +16,12 @@ description: API reference for HI-VQE Chemistry, a Qiskit Function by Qunova Com
 
 ## Inputs
 
+Arguments are checked when you call `run()`, before a job is created: one with
+the wrong name, type or range raises an exception naming it, and nothing is
+billed. `function.validate_arguments({...})` runs the same check without
+running anything, and `function.arguments_schema` lists every argument with its
+type, range and default.
+
 ### `geometry`
 <Attribute attributeTypeHint="`Union[List[List[Union[str, Tuple[float, float, float]]]], str]`">
 This can be either a string or structured lists containing atom and coordinate pairs. If this is given as a string, it must be a molecule geometry in Cartesian Coordinate Format. If this is given as a list, it should be given as a list of lists that each contain an atom string and coordinate tuple.
@@ -64,18 +70,18 @@ A string specifying the basis type; these are passed to pyscf. For example: `"st
 #### `active_orbitals`
 <Attribute attributeTypeHint="`List[int]`" attributeValue="Every orbital index">
 A list of active orbital indices in the interval [0, n) where n is the number of qubits used in the problem. If this is specified, then the frozen_orbitals argument must also be specified.
-- Valid range: The spatial orbital indices valid for the problem
+- Valid range: The spatial orbital indices valid for the problem, each at most once
 </Attribute>
 
 #### `frozen_orbitals`
 <Attribute attributeTypeHint="`List[int]`" attributeValue="`No indices`">
 A list of frozen orbital indices in the same range as active_orbitals. If specified, then active_orbitals must also be specified. Note that only occupied orbitals should be frozen as the number of active electrons is reduced by 2 for every occupied orbital that is frozen.
-- Valid range: The spatial orbital indices valid for the problem, excluding active orbitals
+- Valid range: The spatial orbital indices valid for the problem, excluding active orbitals, each at most once
 </Attribute>
 
 #### `orbital_coeffs`
-<Attribute attributeTypeHint="`List[List[float]]`" attributeValue="`Hartree-Fock molecular orbitals`">
-The coefficients for the spatial orbitals used in the calculation of the electronic repulsion integrals for the system. Some valid examples are Hartree-Fock molecular orbitals, natural orbitals, and AVAS orbitals. 
+<Attribute attributeTypeHint="`Union[List[List[float]], numpy.ndarray]`" attributeValue="`Hartree-Fock molecular orbitals`">
+The coefficients for the spatial orbitals used in the calculation of the electronic repulsion integrals for the system. Some valid examples are Hartree-Fock molecular orbitals, natural orbitals, and AVAS orbitals. Give a matrix as a list of equal-length rows or as a 2-D NumPy array, such as PySCF's `mo_coeff`.
 - Valid range: Various
 </Attribute>
 
@@ -124,7 +130,7 @@ Sets the colinear spin magnetic moment of each atom. By default, this is None an
 #### `avas_aolabels`
 <Attribute attributeTypeHint="`Optional[List[str]]`" attributeValue="`None`">
 This defines Atomic Orbital to be included in AVAS scheme. See [AVAS documentation](https://arxiv.org/abs/1701.07862).
-- Valid range: i.e., ["H 1s", "O 2p"] for H$_2$O
+- Valid range: i.e., ["H 1s", "O 2p"] for H$_2$O, each label at most once
 </Attribute>
 
 #### `avas_threshold`
