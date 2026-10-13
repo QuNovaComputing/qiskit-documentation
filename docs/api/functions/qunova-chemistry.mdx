@@ -16,6 +16,12 @@ description: API reference for HI-VQE Chemistry, a Qiskit Function by Qunova Com
 
 ## Inputs
 
+Arguments are checked when you call `run()`, before a job is created: one with
+the wrong name, type or range raises an exception naming it, and nothing is
+billed. `function.validate_arguments({...})` runs the same check without
+running anything, and `function.arguments_schema` lists every argument with its
+type, range and default.
+
 ### `geometry`
 <Attribute attributeTypeHint="`Union[List[List[Union[str, Tuple[float, float, float]]]], str]`">
 This can be either a string or structured lists containing atom and coordinate pairs. If this is given as a string, it must be a molecule geometry in Cartesian Coordinate Format. If this is given as a list, it should be given as a list of lists that each contain an atom string and coordinate tuple.
@@ -34,6 +40,7 @@ Name of the backend to make the query.
 <Attribute attributeTypeHint="`int`">
 The maximum subspace dimension for the diagonalization. Fewer states will be used if the number is not a perfect square.
 - Required: Yes
+- Valid range: Between 1 and 400 000 000
 - Example: `100`
 </Attribute>
 
@@ -41,6 +48,7 @@ The maximum subspace dimension for the diagonalization. Fewer states will be use
 <Attribute attributeTypeHint="`int`">
 The maximum number of classically-generated CI states to be included in each iteration.
 - Required: Yes
+- Valid range: At least 1
 - Example: `10`
 </Attribute>
 
@@ -64,18 +72,18 @@ A string specifying the basis type; these are passed to pyscf. For example: `"st
 #### `active_orbitals`
 <Attribute attributeTypeHint="`List[int]`" attributeValue="Every orbital index">
 A list of active orbital indices in the interval [0, n) where n is the number of qubits used in the problem. If this is specified, then the frozen_orbitals argument must also be specified.
-- Valid range: The spatial orbital indices valid for the problem
+- Valid range: The spatial orbital indices valid for the problem, each at most once
 </Attribute>
 
 #### `frozen_orbitals`
 <Attribute attributeTypeHint="`List[int]`" attributeValue="`No indices`">
 A list of frozen orbital indices in the same range as active_orbitals. If specified, then active_orbitals must also be specified. Note that only occupied orbitals should be frozen as the number of active electrons is reduced by 2 for every occupied orbital that is frozen.
-- Valid range: The spatial orbital indices valid for the problem, excluding active orbitals
+- Valid range: The spatial orbital indices valid for the problem, excluding active orbitals, each at most once
 </Attribute>
 
 #### `orbital_coeffs`
-<Attribute attributeTypeHint="`List[List[float]]`" attributeValue="`Hartree-Fock molecular orbitals`">
-The coefficients for the spatial orbitals used in the calculation of the electronic repulsion integrals for the system. Some valid examples are Hartree-Fock molecular orbitals, natural orbitals, and AVAS orbitals. 
+<Attribute attributeTypeHint="`Union[List[List[float]], numpy.ndarray]`" attributeValue="`Hartree-Fock molecular orbitals`">
+The coefficients for the spatial orbitals used in the calculation of the electronic repulsion integrals for the system. Some valid examples are Hartree-Fock molecular orbitals, natural orbitals, and AVAS orbitals. Give a matrix as a list of equal-length rows or as a 2-D NumPy array, such as PySCF's `mo_coeff`.
 - Valid range: Various
 </Attribute>
 
@@ -116,7 +124,7 @@ Specifies whether to use cartesian GTOs as the angular momentum basis functions 
 </Attribute>
 
 #### `magmom`
-<Attribute attributeTypeHint="`(`Optional[List[Union[int, float]]]`" attributeValue="`1_000`">
+<Attribute attributeTypeHint="`Optional[List[Union[int, float]]]`" attributeValue="`None`">
 Sets the colinear spin magnetic moment of each atom. By default, this is None and each atom is initialized with a spin of zero.
 - Valid range: See [pyscf documentation](https://pyscf.org/pyscf_api_docs/pyscf.gto.html#pyscf.gto.mole.MoleBase.build)
 </Attribute>
@@ -124,13 +132,12 @@ Sets the colinear spin magnetic moment of each atom. By default, this is None an
 #### `avas_aolabels`
 <Attribute attributeTypeHint="`Optional[List[str]]`" attributeValue="`None`">
 This defines Atomic Orbital to be included in AVAS scheme. See [AVAS documentation](https://arxiv.org/abs/1701.07862).
-- Valid range: i.e., ["H 1s", "O 2p"] for H$_2$O
+- Valid range: i.e., ["H 1s", "O 2p"] for H$_2$O, each label at most once
 </Attribute>
 
 #### `avas_threshold`
 <Attribute attributeTypeHint="`float`" attributeValue="`0.2`">
 This specifies the cutoff value used to determine which Atomic Orbitals (AOs) are retained in the active space.
-- Valid range: Between 0.0 and 2.0
 </Attribute>
 
 #### `noons_level`
@@ -224,10 +231,10 @@ The tolerance for predicting which states should be screened out of the subspace
 - Example: `{"shots": 10_000, "max_iter": 10 }`
 </Attribute>
 
-### `estimate_only`
+### `use_session`
 <Attribute attributeTypeHint="`bool`" attributeValue="`False`">
-Size the problem and return without running it. The response contains an
-`"estimate"` dictionary instead of a result, and no QPU time is spent.
+Runs the function's quantum jobs in one Qiskit Runtime session, so that jobs
+after the first do not wait in the queue again.
 - Required: No
 - Example: `True`
 </Attribute>
@@ -245,10 +252,12 @@ to this function.
 | `"l"` | No limit | 48 CPUs, 768 GB | 4.0 RU |
 
 A size smaller than the problem needs is rejected before any QPU time is
-spent, with error code 1221 naming the size to use. A size larger than it
-needs runs, and is billed at that larger size. Runs made with a license token
-are not checked against the problem, and are bounded by the qubit limit the
-license grants instead.
+spent, with error code 1221 naming the size to use; the rejected run is still
+billed at the size it was submitted at. A size larger than it needs runs, and
+is billed at that larger size. To check the size before submitting, see
+[Check the size before you run](/docs/guides/qunova-chemistry#check-the-size-before-you-run). This applies to runs made
+with a license token and to trial runs too, since the size is the machine the
+job runs on; a license token also sets its own qubit limit.
 - Required: No
 - Example: `"l"`
 </Attribute>
@@ -265,20 +274,3 @@ The function returns a dictionary with the following keys and values:
 | `"energy_history"` | `List[float]` | The energies computed each iteration during the hybrid optimization process, in the same order that they were computed. Two energies are computed per iteration as part of the SPSA optimization process. |
 | `"function_version"` | `string` | The version of the function that ran the job. Quote it in a support request. |
 | `"metadata"` | `dict` | Contains `"resource_usage"`, giving the time spent in each stage of the job, including QPU time. |
-
-### With `estimate_only`
-
-An estimate returns `"function_version"` and `"metadata"` as above, and in
-place of a result an `"estimate"` dictionary:
-
-| Key   | Value Type| Explanation   |
-|-----|---------------|-----|
-| `"num_qubits"` | `int` | The number of qubits the problem needs. |
-| `"function_size"` | `string` | The function size to submit it at. |
-| `"compute_profile"` | `string` | The CPUs and memory that size provides, such as `"16x128"`. |
-| `"license_fee_ru"` | `float` | What a run at that size is billed, in resource units. |
-| `"qubit_limit"` | `Optional[int]` | The qubit limit that applies to the caller, or `null` if none does. |
-| `"within_qubit_limit"` | `bool` | Whether the problem fits that limit. |
-
-The qubit limit is reported rather than enforced, so a problem can be sized
-before holding a license that permits it.
