@@ -25,8 +25,15 @@ type, range and default.
 ### `geometry`
 <Attribute attributeTypeHint="`Union[List[List[Union[str, Tuple[float, float, float]]]], str]`">
 This can be either a string or structured lists containing atom and coordinate pairs. If this is given as a string, it must be a molecule geometry in Cartesian Coordinate Format. If this is given as a list, it should be given as a list of lists that each contain an atom string and coordinate tuple.
-- Required: Yes
+- Required: Yes, unless `fcidump_file_name` is given
 - Example: `[['O', (0, 0, 0)], ['H', (0, 1, 0)], ['H', (0, 0, 1)]]` or `"O 0 0 0; H 0 1 0; H 0 0 1"`
+</Attribute>
+
+### `fcidump_file_name`
+<Attribute attributeTypeHint="`str`">
+The name of an FCIDUMP file you uploaded to the function with `file_upload`, without a directory part, to use in place of `geometry`. The integrals of the file are used as they are, and `geometry` and `molecule_options` are ignored. The file can be plain text or gzip-compressed, and must describe a closed-shell singlet. See [Run from an FCIDUMP file](/docs/guides/qunova-chemistry#run-from-an-fcidump-file).
+- Required: Yes, unless `geometry` is given
+- Example: `"nh3.FCIDUMP"`
 </Attribute>
 
 ### `backend_name`
