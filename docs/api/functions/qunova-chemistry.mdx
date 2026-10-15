@@ -252,7 +252,7 @@ Which resources the job runs on, and what the run is billed. It is passed to
 `run()` like the arguments above, though it belongs to the platform rather than
 to this function.
 
-| `function_size` | Qubits | Compute profile | License fee per run |
+| `function_size` | Qubits | Compute profile | Per-run fee |
 |-----|-----|-----|-----|
 | `"s"` | Up to 10 | 8 CPUs, 32 GB | 0.4 RU |
 | `"m"` | Up to 20 | 16 CPUs, 128 GB | 1.0 RU |
@@ -262,9 +262,9 @@ A size smaller than the problem needs is rejected before any QPU time is
 spent, with error code 1221 naming the size to use; the rejected run is still
 billed at the size it was submitted at. A size larger than it needs runs, and
 is billed at that larger size. To check the size before submitting, see
-[Check the size before you run](/docs/guides/qunova-chemistry#check-the-size-before-you-run). This applies to runs made
-with a license token and to trial runs too, since the size is the machine the
-job runs on; a license token also sets its own qubit limit.
+[Qubits your problem needs](/docs/guides/qunova-chemistry#qubits-your-problem-needs). This applies to runs made
+with a license token too, since the size is the machine the job runs on; a
+license token also sets its own qubit limit.
 - Required: No
 - Example: `"l"`
 </Attribute>
