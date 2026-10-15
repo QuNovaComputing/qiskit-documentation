@@ -17,8 +17,8 @@ description: API reference for HI-VQE Chemistry, a Qiskit Function by Qunova Com
 ## Inputs
 
 Arguments are checked when you call `run()`, before a job is created: one with
-the wrong name, type or range raises an exception naming it, and nothing is
-billed. `function.validate_arguments({...})` runs the same check without
+the wrong name, type or range raises an exception describing what failed, and
+nothing is billed. `function.validate_arguments({...})` runs the same check without
 running anything, and `function.arguments_schema` lists every argument with its
 type, range and default.
 
@@ -78,7 +78,7 @@ A string specifying the basis type; these are passed to pyscf. For example: `"st
 
 #### `active_orbitals`
 <Attribute attributeTypeHint="`List[int]`" attributeValue="Every orbital index">
-A list of active orbital indices in the interval [0, n) where n is the number of qubits used in the problem. If this is specified, then the frozen_orbitals argument must also be specified.
+A list of active orbital indices in the interval [0, n) where n is the number of orbitals in the basis. If this is specified, then the frozen_orbitals argument must also be specified.
 - Valid range: The spatial orbital indices valid for the problem, each at most once
 </Attribute>
 
@@ -262,9 +262,10 @@ A size smaller than the problem needs is rejected before any QPU time is
 spent, with error code 1221 naming the size to use; the rejected run is still
 billed at the size it was submitted at. A size larger than it needs runs, and
 is billed at that larger size. To check the size before submitting, see
-[Qubits your problem needs](/docs/guides/qunova-chemistry#qubits-your-problem-needs). This applies to runs made
-with a license token too, since the size is the machine the job runs on; a
-license token also sets its own qubit limit.
+[Qubits your problem needs](/docs/guides/qunova-chemistry#qubits-your-problem-needs). With a license token,
+the size is checked the same way and sets the compute, and so the classical
+compute cost, but no per-execution fee is charged; the token also sets its own
+qubit limit.
 - Required: No
 - Example: `"l"`
 </Attribute>
