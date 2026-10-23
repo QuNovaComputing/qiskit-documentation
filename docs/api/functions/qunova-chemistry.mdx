@@ -252,20 +252,22 @@ Which resources the job runs on, and what the run is billed. It is passed to
 `run()` like the arguments above, though it belongs to the platform rather than
 to this function.
 
-| `function_size` | Qubits | Compute profile | Per-execution fee |
-|-----|-----|-----|-----|
-| `"s"` | Up to 10 | 8 CPUs, 32 GB | 0.4 RU |
-| `"m"` | Up to 20 | 16 CPUs, 128 GB | 1.0 RU |
-| `"l"` | More than 20 | 48 CPUs, 768 GB | 4.0 RU |
+| `function_size` | Qubits | `max_states` | Compute profile | Per-execution fee |
+|-----|-----|-----|-----|-----|
+| `"s"` | Up to 20 | Up to 1,000 | 8 CPUs, 32 GB | 0.4 RU |
+| `"m"` | Up to 48 | Up to 10,000,000 | 16 CPUs, 128 GB | 1.0 RU |
+| `"l"` | More than 48 | More than 10,000,000 | 48 CPUs, 768 GB | 4.0 RU |
 
-A size smaller than the problem needs is rejected before any QPU time is
-spent, with error code 1221 naming the size to use; the rejected run is still
-billed at the size it was submitted at. A size larger than it needs runs, and
-is billed at that larger size. To check the size before submitting, see
-[Qubits your problem needs](/docs/guides/qunova-chemistry#qubits-your-problem-needs). With a license token,
-the size is checked the same way and sets the compute, and so the classical
-compute cost, but no per-execution fee is charged; the token also sets its own
-qubit limit.
+A problem needs the smallest size that fits both its qubits and its
+`max_states`. A size smaller than the problem needs is rejected before any QPU
+time is spent, with error code 1221 naming the size to use; the rejected run is
+still billed at the size it was submitted at. A size larger than it needs runs,
+and is billed at that larger size. To check the size before submitting, see
+[Size your problem needs](/docs/guides/qunova-chemistry#size-your-problem-needs).
+Licensed runs are checked the same way, and the size sets their compute, and so
+their classical compute cost, but no per-execution fee is charged. Runs with
+trial access are limited to `"s"`, and are rejected with error code 4500 above
+it.
 - Required: No
 - Example: `"l"`
 </Attribute>
@@ -282,3 +284,7 @@ The function returns a dictionary with the following keys and values:
 | `"energy_history"` | `List[float]` | The energies computed each iteration during the hybrid optimization process, in the same order that they were computed. Two energies are computed per iteration as part of the SPSA optimization process. |
 | `"function_version"` | `string` | The version of the function that ran the job. Quote it in a support request. |
 | `"metadata"` | `dict` | Contains `"resource_usage"`, giving the time spent in each stage of the job, including QPU time. |
+
+A job stopped with `job.cancel()` returns what the run had computed by then
+instead, with `"status": "canceled"`, and writes no results file. See
+[Results of a stopped job](/docs/guides/qunova-chemistry#results-of-a-stopped-job).
